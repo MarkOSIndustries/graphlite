@@ -6,13 +6,13 @@ const MAGIC_BYTE_LIST_LENGTH_MASK: u8   = 0b0001_1111;
 const MAGIC_BYTE_CHILDREN_IS_BITMAP: u8 = 0b0010_0000;
 const MAGIC_BYTE_IS_MATCH: u8           = 0b1000_0000;
 
-#[derive(Debug)]
-pub struct BinaryKeySet {
+#[derive(PartialEq,Debug)]
+pub struct KeySet {
     children: HashMap<u8,Self>,
     is_match: bool,
 }
 
-impl BinaryKeySet {
+impl KeySet {
     pub fn new() -> Self {
         Self { is_match: false, children: HashMap::new() }
     }
@@ -113,7 +113,7 @@ impl BinaryKeySet {
             None => Err("Not enough bytes".to_string()),
             Some((magic_byte, mut buf)) => {
                 let mut child_exists = bitvec![BigEndian, u8; 0; 256];
-                let mut next = BinaryKeySet::new();
+                let mut next = Self::new();
                 next.is_match = MAGIC_BYTE_IS_MATCH == magic_byte & MAGIC_BYTE_IS_MATCH;
                 if MAGIC_BYTE_CHILDREN_IS_BITMAP == magic_byte & MAGIC_BYTE_CHILDREN_IS_BITMAP {
                     if buf.len() < 32 {
@@ -147,3 +147,6 @@ impl BinaryKeySet {
         }
     }
 }
+
+#[cfg(test)]
+mod test;

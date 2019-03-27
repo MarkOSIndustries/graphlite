@@ -1,15 +1,18 @@
+mod keyset;
+
 use sled::Db;
 use std::path;
-mod binary_key_set;
 
 fn main() {
-    let mut bktn1 = binary_key_set::BinaryKeySet::new();
+    let mut bktn1 = keyset::KeySet::new();
     bktn1.add(&vec![68]);
     let bktn1 = bktn1;
 
-    let mut bktn2 = binary_key_set::BinaryKeySet::new();
+    let mut bktn2 = keyset::KeySet::new();
     bktn2.add(&vec![78, 88]);
     bktn2.add(&vec![88]);
+    bktn2.add(&vec![88, 120, 99, 45]);
+    bktn2.add(&vec![88, 120, 109, 45]);
     let bktn2 = bktn2;
 
     let k: Vec<u8> = vec![127];
@@ -26,7 +29,7 @@ fn main() {
         match tree.get(&k) {
             Ok(Some(v)) => {
                 println!("Got {} [{}] {:?}", k[0], v.len(), &v);
-                println!("Got {} [{}] {:?} {:?}", k[0], v.len(), &v, &binary_key_set::BinaryKeySet::deserialize(&v));
+                println!("Got {} [{}] {:?} {:?}", k[0], v.len(), &v, &keyset::KeySet::deserialize(&v));
             },
             Ok(None) => println!("Got {} None", k[0]),
             Err(err) => println!("Couldn't get {}", err),
@@ -41,7 +44,7 @@ fn main() {
         let iter = tree.scan(&k);
         for x in iter {
             if let Ok((kk,v)) = x {
-                let reconstructed = binary_key_set::BinaryKeySet::deserialize(&v).unwrap();
+                let reconstructed = keyset::KeySet::deserialize(&v).unwrap();
                 println!("Iterated {} [{}] {:?} {:?}", kk[0], v.len(), &v, &reconstructed);
                 println!("Queried {} {}", 78u8, reconstructed.contains(&vec![78u8]));
                 println!("Queried {} {}", 88u8, reconstructed.contains(&vec![88u8]));
