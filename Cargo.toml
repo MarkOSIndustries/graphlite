@@ -7,6 +7,14 @@ edition = "2018"
 [dependencies]
 sled = "0.19.0"
 bitvec = "0.10.0"
-# serde = "1.0.89"
-# bincode = "1.1.2"
-# rmp-serde = "0.13.7"
+bytes = "0.4" # needed by prost
+prost = "0.5" # compiles the protos
+tokio = "0.1" # needed by tower
+tower-h2 = { git = "https://github.com/tower-rs/tower-h2" }
+#tower-add-origin = { git = "https://github.com/tower-rs/tower-http" }
+tower-grpc = { git = "https://github.com/tower-rs/tower-grpc" }
+#tower-service = "0.2"
+#tower = { git = "https://github.com/tower-rs/tower" }
+
+[build-dependencies]
+tower-grpc-build = { git = "https://github.com/tower-rs/tower-grpc" }

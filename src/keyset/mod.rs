@@ -2,6 +2,8 @@ use std::collections::HashMap;
 // use std::collections::bit_vec::BitVec;
 use bitvec::*;
 
+// TODO: Implement a read-only version which does not allocate any RAM beyond the serialized buffer
+
 const MAGIC_BYTE_LIST_LENGTH_MASK: u8   = 0b0001_1111;
 const MAGIC_BYTE_CHILDREN_IS_BITMAP: u8 = 0b0010_0000;
 const MAGIC_BYTE_IS_MATCH: u8           = 0b1000_0000;

@@ -1,0 +1,36 @@
+syntax="proto3";
+
+package graphlite_protocol;
+
+service entities_v0 {
+  rpc put(Entry) returns (Nothing);
+  rpc delete(Key) returns (Nothing);
+  rpc get(Key) returns (Entry);
+}
+
+service links_v0 {
+  rpc put(Link) returns (Nothing);
+  rpc delete(Key) returns (Nothing);
+  rpc get(Key) returns (stream Link);
+  rpc exists(Link) returns (Existence);
+}
+
+message Nothing {}
+
+message Key {
+  bytes key = 1;
+}
+
+message Entry {
+  bytes key = 1;
+  bytes value = 2;
+}
+
+message Link {
+  bytes from_key = 1;
+  bytes to_key = 2;
+}
+
+message Existence {
+  bool exists = 1;
+}
