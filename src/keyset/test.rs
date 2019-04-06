@@ -46,7 +46,6 @@ pub fn serialized_size_grows_by_2_bytes_per_unique_byte_before_32_at_same_node()
     original.add(&vec![88, 120, 17]);
     original.add(&vec![88, 120, 18]);
     original.add(&vec![88, 120, 19]);
-    
     original.add(&vec![88, 120, 20]);
     original.add(&vec![88, 120, 21]);
 
@@ -130,4 +129,59 @@ pub fn serialized_size_grows_by_1_byte_per_unique_byte_after_32_at_same_node() {
     assert_eq!(original, deserialized2);
     
     assert_eq!(serialized1.len() + 8, serialized2.len());
+}
+
+#[test]
+pub fn union() {
+    let mut expected = KeySet::new();
+    expected.add(&vec![88, 120, 0]);
+    expected.add(&vec![88, 120, 1]);
+    expected.add(&vec![88, 121, 2]);
+    expected.add(&vec![88, 121, 3]);
+    expected.add(&vec![88, 122, 4]);
+    expected.add(&vec![88, 120, 5]);
+    expected.add(&vec![88, 120, 6]);
+    expected.add(&vec![88, 122, 7]);
+    expected.add(&vec![88, 124, 8]);
+    expected.add(&vec![88, 124, 9]);
+    
+    let mut first = KeySet::new();
+    first.add(&vec![88, 120, 0]);
+    first.add(&vec![88, 120, 1]);
+    first.add(&vec![88, 121, 2]);
+    first.add(&vec![88, 121, 3]);
+    first.add(&vec![88, 122, 4]);
+    let mut second = KeySet::new();
+    second.add(&vec![88, 120, 0]);
+    second.add(&vec![88, 120, 5]);
+    second.add(&vec![88, 120, 6]);
+    second.add(&vec![88, 122, 7]);
+    second.add(&vec![88, 124, 8]);
+    second.add(&vec![88, 124, 9]);
+
+    let result = first.union(&second);
+    assert_eq!(result, expected);
+}
+
+#[test]
+pub fn intersect() {
+    let mut expected = KeySet::new();
+    expected.add(&vec![88, 120, 0]);
+    
+    let mut first = KeySet::new();
+    first.add(&vec![88, 120, 0]);
+    first.add(&vec![88, 120, 1]);
+    first.add(&vec![88, 121, 2]);
+    first.add(&vec![88, 121, 3]);
+    first.add(&vec![88, 122, 4]);
+    let mut second = KeySet::new();
+    second.add(&vec![88, 120, 0]);
+    second.add(&vec![88, 120, 5]);
+    second.add(&vec![88, 120, 6]);
+    second.add(&vec![88, 122, 7]);
+    second.add(&vec![88, 124, 8]);
+    second.add(&vec![88, 124, 9]);
+
+    let result = first.intersect(&second);
+    assert_eq!(result, expected);
 }

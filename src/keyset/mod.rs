@@ -56,6 +56,49 @@ impl KeySet {
             }
         }
     }
+
+    pub fn union(mut self, other: &Self) -> Self {
+        self.is_match |= other.is_match;
+        self.children = self.children.into_iter()
+            .map(|(byte, self_child)| {
+                match other.children.get(&byte) {
+                    None => (byte, self_child),
+                    Some(other_child) => (byte, self_child.union(other_child)),
+                }
+            })
+            .collect();
+        for (byte, other_child) in other.children.iter() {
+            if let None = self.children.get(byte) {
+                self.children.insert(*byte, Self::new().union(other_child));
+            }
+        }
+        self
+    }
+    
+    pub fn intersect(self, other: &Self) -> Self {
+        match self.intersect_and_prune(other) {
+            None => Self::new(),
+            Some(intersection) => intersection,
+        }
+    }
+    
+    fn intersect_and_prune(mut self, other: &Self) -> Option<Self> {
+        self.is_match &= other.is_match;
+        self.children = self.children.into_iter()
+            .map(|(byte, self_child)| (byte, self_child, other.children.get(&byte)))
+            .filter(|(_byte, _self_child, maybe_other_child)| *maybe_other_child != None)
+            .map(|(byte, self_child, maybe_other_child)| {
+                (byte, self_child.intersect_and_prune(maybe_other_child.unwrap()))
+            })
+            .filter(|(_byte, child)| *child != None)
+            .map(|(byte, child)| (byte, child.unwrap()))
+            .collect();
+        if self.is_match || self.children.len() > 0 {
+            Some(self)
+        } else {
+            None
+        }
+    }
     
     pub fn serialize(&self) -> Vec<u8> {
         let mut child_exists = bitvec![BigEndian, u8; 0; 256];
