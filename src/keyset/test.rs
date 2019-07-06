@@ -94,7 +94,6 @@ pub fn serialized_size_grows_by_1_byte_per_unique_byte_after_32_at_same_node() {
     original.add(&vec![88, 120, 17]);
     original.add(&vec![88, 120, 18]);
     original.add(&vec![88, 120, 19]);
-    
     original.add(&vec![88, 120, 20]);
     original.add(&vec![88, 120, 21]);
     original.add(&vec![88, 120, 22]);
@@ -105,7 +104,6 @@ pub fn serialized_size_grows_by_1_byte_per_unique_byte_after_32_at_same_node() {
     original.add(&vec![88, 120, 27]);
     original.add(&vec![88, 120, 28]);
     original.add(&vec![88, 120, 29]);
-    
     original.add(&vec![88, 120, 30]);
     original.add(&vec![88, 120, 31]);
     
@@ -183,5 +181,31 @@ pub fn intersect() {
     second.add(&vec![88, 124, 9]);
 
     let result = first.intersect(&second);
+    assert_eq!(result, expected);
+}
+
+#[test]
+pub fn difference() {
+    let mut expected = KeySet::new();
+    expected.add(&vec![88, 120, 1]);
+    expected.add(&vec![88, 121, 2]);
+    expected.add(&vec![88, 121, 3]);
+    expected.add(&vec![88, 122, 4]);
+    
+    let mut first = KeySet::new();
+    first.add(&vec![88, 120, 0]);
+    first.add(&vec![88, 120, 1]);
+    first.add(&vec![88, 121, 2]);
+    first.add(&vec![88, 121, 3]);
+    first.add(&vec![88, 122, 4]);
+    let mut second = KeySet::new();
+    second.add(&vec![88, 120, 0]);
+    second.add(&vec![88, 120, 5]);
+    second.add(&vec![88, 120, 6]);
+    second.add(&vec![88, 122, 7]);
+    second.add(&vec![88, 124, 8]);
+    second.add(&vec![88, 124, 9]);
+
+    let result = first.difference(&second);
     assert_eq!(result, expected);
 }

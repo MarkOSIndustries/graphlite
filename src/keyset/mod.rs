@@ -100,6 +100,32 @@ impl KeySet {
         }
     }
     
+    pub fn difference(self, other: &Self) -> Self {
+        match self.difference_and_prune(other) {
+            None => Self::new(),
+            Some(diff) => diff,
+        }
+    }
+
+    fn difference_and_prune(mut self, other: &Self) -> Option<Self> {
+        self.is_match &= !other.is_match;
+        self.children = self.children.into_iter()
+            .map(|(byte, self_child)| {
+                match other.children.get(&byte) {
+                    None => (byte, Some(self_child)),
+                    Some(other_child) => (byte, self_child.difference_and_prune(other_child)),
+                }
+            })
+            .filter(|(_byte, maybe_child)| *maybe_child != None)
+            .map(|(byte, maybe_child)| (byte, maybe_child.unwrap()))
+            .collect();
+        if self.is_match || self.children.len() > 0 {
+            Some(self)
+        } else {
+            None
+        }
+    }
+    
     pub fn serialize(&self) -> Vec<u8> {
         let mut child_exists = bitvec![BigEndian, u8; 0; 256];
         let mut child_data: Vec<u8> = vec![];
